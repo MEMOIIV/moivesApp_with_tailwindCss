@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styleNav from "./navbar.module.css";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   ListIcon,
   XLogoIcon,
@@ -8,18 +8,23 @@ import {
   SpotifyLogoIcon,
   InstagramLogoIcon,
 } from "../../utils/icons";
-export default function Navbar() {
+export default function Navbar({ userData, logoutUser }) {
   const [openNav, setOpenNav] = useState(false);
+  let navigate = useNavigate();
   function toggleNavList() {
     setOpenNav(!openNav);
   }
+
+  function logout() {
+    logoutUser()
+    navigate("/login");
+  }
   return (
     <>
-      <nav className={`${styleNav.container_navbar} z-50`}>
-        <Link
-          className="text-3xl mr-4 uppercase cursor-pointer hover:text-bgTransparent transition-all duration-300"
-          to={"/"}
-        >
+      <nav
+        className={`${styleNav.container_navbar} z-50 ${userData == null ? "py-2" : ""}`}
+      >
+        <Link className="text-3xl mr-4 uppercase cursor-pointer hover:text-bgTransparent transition-all duration-300">
           Nexo
         </Link>
 
@@ -28,10 +33,10 @@ export default function Navbar() {
           <ul
             className={`${styleNav.navbar} ${openNav ? "flex" : "hidden xl:flex"}`}
           >
-            {/**/}
-
             {/* part one */}
-            <div className="navbar_link flex flex-col xl:flex-row">
+            <div
+              className={`navbar_link flex flex-col xl:flex-row ${userData == null ? "hidden" : ""}`}
+            >
               <Link to={"/home"} className={`${styleNav.navList}`}>
                 home
               </Link>
@@ -53,27 +58,41 @@ export default function Navbar() {
             </div>
 
             {/* part two */}
-            <div className="flex flex-col xl:flex-row items-center">
+            <div className="flex flex-col xl:flex-row items-center xl:ml-auto">
               <input
                 type="text"
-                className="bg-fontColor rounded-md order-10 xl:order-0 xl:w-72 w-full text-black px-3 py-1 focus:outline-none focus:ring-2 focus:ring-bgTransparent"
+                className={`${styleNav.styleInput} ${userData == null ? "hidden" : ""}`}
                 placeholder="search"
               />
-              <div className={styleNav.containerIcon}>
+              <div
+                className={`${styleNav.containerIcon} ${userData == null ? "hidden" : ""}`}
+              >
                 <XLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <FacebookLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <SpotifyLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <InstagramLogoIcon className={`${styleNav.iconNavStyle}`} />
               </div>
-              <Link to={"/login"} className={`${styleNav.navList}`}>
-                login
-              </Link>
-              <Link
-                to={"/signup"}
-                className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0`}
+              {userData != null ? (
+                ""
+              ) : (
+                <>
+                  <Link to={"/login"} className={`${styleNav.navList}`}>
+                    login
+                  </Link>
+                  <Link
+                    to={"/signup"}
+                    className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0`}
+                  >
+                    signUp
+                  </Link>
+                </>
+              )}
+              <li
+                className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0 cursor-pointer ${userData == null ? "hidden" : ""}`}
+                onClick={logout}
               >
-                signUp
-              </Link>
+                logout
+              </li>
             </div>
           </ul>
         </div>
@@ -91,7 +110,7 @@ export default function Navbar() {
           setOpenNav(false);
         }}
       >
-        <Outlet/>
+        <Outlet />
       </div>
     </>
   );

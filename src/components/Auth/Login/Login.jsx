@@ -1,9 +1,10 @@
 import Joi from "joi";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { EyeIcon, EyeClosedIcon } from "../../../utils/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-function Login() {
+import { GoogleLogin } from "@react-oauth/google";
+function Login({ loginVer }) {
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -11,6 +12,7 @@ function Login() {
 
   const navigate = useNavigate();
   const [joiError, setJoiError] = useState([]);
+  const [clickButton, setClickButton] = useState(false);
 
   const [eyeIcon, setEyeIcon] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -28,6 +30,8 @@ function Login() {
   }
 
   function submitUser(e) {
+    // change value clickButton to disable button
+    setClickButton(true);
     e.preventDefault();
     const schema = Joi.object({
       email: Joi.string().email({
@@ -44,22 +48,52 @@ function Login() {
       getUserData();
     } else {
       setJoiError(joiResponse.error?.details);
+      // change value clickButton to enable button
+      setClickButton(false);
     }
   }
 
+  // System Login
   async function getUserData() {
     try {
-      let res = await axios.get("http://localhost:3000/user");
-      let allData = res.data;
-      allData.map((data) => {
-        if (data.email == user.email && data.password == user.password) {
-          navigate("/home");
-        } else {
-          setErrorMessage("email or password not success");
-        }
-      });
+      let { data } = await axios.post("http://localhost:3000/auth/login", user);
+      if (data.message == "success") {
+        // i need user data from token
+        localStorage.setItem("token", data.data.credentials.access_token);
+        loginVer();
+        navigate("/home");
+        // change value clickButton to enable button
+        setClickButton(false);
+      }
     } catch (error) {
-      console.log(error);
+      console.log(error.code);
+      // change value clickButton to enable button
+      setClickButton(false);
+
+      if (error.code == "ERR_BAD_REQUEST") {
+        setErrorMessage("Invalid Email or Password");
+      }
+    }
+  }
+
+  // Login by gmail
+  async function handleSuccess(credentialResponse) {
+    // 1 : google send Encoded token called credential
+    const googleToken = credentialResponse.credential;
+    try {
+      // 2 : send the token you get from google to backend API
+      const { data } = await axios.post(
+        "http://localhost:3000/auth/login/gmail",
+        { idToken: googleToken },
+      );
+      // 3 : check data success and save the token in the localStorage
+      if (data.message == "success") {
+        localStorage.setItem("token", data.data.access_token);
+        loginVer();
+        navigate("/home");
+      }
+    } catch (error) {
+      console.log("Login Failed", error);
     }
   }
 
@@ -126,10 +160,20 @@ function Login() {
 
           <p className="text-red-700 text-[18px] text-center">{errorMessage}</p>
 
-          <div className="mt-5 w-full text-end">
-            <button className=" bg-bgTransparent px-12 py-2 rounded-md cursor-pointer hover:opacity-85 transition-all duration-300">
+          <div className="mt-5 w-full text-end flex flex-col items-center gap-4 lg:flex-row lg:justify-center ">
+            <button
+              disabled={clickButton ? true : false}
+              className={`order-0 lg:order-1 bg-bgTransparent px-12 py-2 rounded-md cursor-pointer hover:opacity-85 transition-all duration-300 tracking-wider 
+                ${clickButton ? "cursor-not-allowed bg-gray-700 hover:opacity-100" : "cursor-pointer"}`}
+            >
               login
             </button>
+
+            <GoogleLogin
+              disabled={clickButton ? true : false}
+              onSuccess={handleSuccess}
+              onError={() => console.log("Login Failed")}
+            />
           </div>
         </form>
       </section>

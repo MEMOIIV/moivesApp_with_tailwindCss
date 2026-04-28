@@ -3,11 +3,13 @@ import React, { useEffect, useState } from "react";
 import { layerLoading } from "../../utils/card";
 import { Link } from "react-router-dom";
 // json-server --watch db.json --port 3000
-function Home() {
+function Home({ userData }) {
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
+  const [user, setUser] = useState(null);
   let apiKey = "ab6f02890a894dfd18b04c025b5de2eb";
 
+  // Get all Trending Movies
   async function getTrendingMovies() {
     let { data } = await axios.get(
       `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`,
@@ -16,6 +18,7 @@ function Home() {
     setMovies(data.results);
   }
 
+  // Get all Trending Tv Show
   async function getTrendingTvShow() {
     let { data } = await axios.get(
       `https://api.themoviedb.org/3/trending/tv/week?api_key=${apiKey}`,
@@ -23,17 +26,37 @@ function Home() {
     setTvShows(data.results);
   }
 
+  async function getUserData() {
+    let { data } = await axios.get(
+      `http://localhost:3000/user/${userData._id}/sheared-profile`,
+    );
+    if (data.message == "success") {
+      setUser(data);
+    }
+  }
+
   useEffect(() => {
     // component Did Mount \\
     // eslint-disable-next-line react-hooks/set-state-in-effect
     getTrendingMovies();
     getTrendingTvShow();
+    getUserData();
   }, []);
 
   return (
     <>
+      {user == null ? (
+        ""
+      ) : (
+        <div className="mt-defaultPadding w-[90%] mx-auto text-3xl">
+          <h2>Hello {user.data.profile.firstName}</h2>
+        </div>
+      )}
+
       {/* Movies show */}
-      <div className="mt-defaultPadding grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 w-[90%] m-auto px-4 gap-4">
+      <div
+        className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 w-[90%] m-auto px-4 gap-4 ${user == null ? "mt-defaultPadding" : "mt-10"}`}
+      >
         <div
           className="relative row-span-1 col-span-1 md:col-span-1 xl:col-span-2
         before:content-[''] before:absolute before:top-0 before:w-[20%] before:h-px before:bg-borderColor
@@ -52,7 +75,8 @@ function Home() {
           ? movies.map((movie, index) => {
               return (
                 <div key={index} className="relative">
-                  <Link to={`/details/${movie.id}`}>
+                  <Link to={`/details/movie/${movie.id}`} onMouseMove={()=>{
+                  }}>
                     <img
                       src={
                         "https://image.tmdb.org/t/p/w500" + movie.poster_path
@@ -61,7 +85,9 @@ function Home() {
                       alt="image"
                     />
                   </Link>
-                  <h6 className="pt-1">{movie.original_title}</h6>
+                  <h6 className="pt-1 text-md md:text-sm">
+                    {movie.original_title}
+                  </h6>
                   <p
                     className={`absolute top-0 right-0 p-2 bg-bgTransparent ${
                       Number.isInteger(Math.round(movie.vote_average * 10) / 10)
@@ -96,7 +122,7 @@ function Home() {
         {tvShows.length != 0
           ? tvShows.map((tvShow, index) => (
               <div key={index} className="relative">
-                <Link to={`/details${tvShow.id}`}>
+                <Link to={`/details/tv/${tvShow.id}`}>
                   {" "}
                   <img
                     src={"https://image.tmdb.org/t/p/w500" + tvShow.poster_path}
