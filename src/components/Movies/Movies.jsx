@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { layerLoading } from "../../utils/card";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 export default function Movies() {
   const [allMovies, setAllMovies] = useState([]);
@@ -10,8 +11,10 @@ export default function Movies() {
     let { data } = await axios.get(
       `https://api.themoviedb.org/3/discover/movie?api_key=ab6f02890a894dfd18b04c025b5de2eb&page=${pages}`,
     );
-    setAllMovies((prev) => [...prev, ...data.results]);
+    const newMoviesList = data.results;
+    setAllMovies((currentMovies) => [...currentMovies, ...newMoviesList]);
   }
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     getAllMovies();
@@ -38,11 +41,18 @@ export default function Movies() {
         {allMovies.length != 0
           ? allMovies.map((movies, index) => (
               <div key={index} className="relative">
-                <img
-                  src={"https://image.tmdb.org/t/p/w500" + movies.poster_path}
-                  className="w-full"
-                  alt="image"
-                />
+                <Link to={`/details/movie/${movies.id}`}>
+                  <img
+                    src={
+                      movies.poster_path != null
+                        ? "https://image.tmdb.org/t/p/w500" + movies.poster_path
+                        : "/No-Image.png"
+                    }
+                    className="w-full"
+                    onError={(e) => (e.target.src = "/No-Image.png")}
+                    alt="image"
+                  />
+                </Link>
                 <h6 className="pt-1">{movies.title}</h6>
                 <p
                   className={`absolute top-0 right-0 p-2 bg-bgTransparent ${

@@ -1,13 +1,14 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { layerLoading } from "../../utils/card";
 import { Link } from "react-router-dom";
-// json-server --watch db.json --port 3000
-function Home({ userData }) {
+import { ApiContext } from "../../context/context";
+function Home() {
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
   const [user, setUser] = useState(null);
   let apiKey = "ab6f02890a894dfd18b04c025b5de2eb";
+  const { loggedUserData } = useContext(ApiContext);
 
   // Get all Trending Movies
   async function getTrendingMovies() {
@@ -28,7 +29,7 @@ function Home({ userData }) {
 
   async function getUserData() {
     let { data } = await axios.get(
-      `http://localhost:3000/user/${userData._id}/sheared-profile`,
+      `http://localhost:3000/user/${loggedUserData._id}/sheared-profile`,
     );
     if (data.message == "success") {
       setUser(data);
@@ -41,6 +42,7 @@ function Home({ userData }) {
     getTrendingMovies();
     getTrendingTvShow();
     getUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -75,13 +77,16 @@ function Home({ userData }) {
           ? movies.map((movie, index) => {
               return (
                 <div key={index} className="relative">
-                  <Link to={`/details/movie/${movie.id}`} onMouseMove={()=>{
-                  }}>
+                  <Link
+                    to={`/details/movie/${movie.id}`}
+                    onMouseMove={() => {}}
+                  >
                     <img
-                      src={
-                        "https://image.tmdb.org/t/p/w500" + movie.poster_path
+                      src={movie.poster_path != null ?
+                        "https://image.tmdb.org/t/p/w500" + movie.poster_path : "/No-Image.png"
                       }
                       className="w-full"
+                      onError={(e) => (e.target.src = "/No-Image.png")}
                       alt="image"
                     />
                   </Link>

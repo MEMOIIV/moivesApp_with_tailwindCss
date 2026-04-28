@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import {
-  createBrowserRouter,
+  // createBrowserRouter,
   createHashRouter,
   Navigate,
   RouterProvider,
@@ -13,14 +12,15 @@ import Notfound from "./components/NotFound/Notfound";
 import Movies from "./components/Movies/Movies";
 import TvShow from "./components/TvShow/TvShow";
 import Details from "./components/Details/Details";
-import { jwtDecode } from "jwt-decode";
-import { useEffect, useState } from "react";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-
+import { useContext } from "react";
+import { ApiContext } from "./context/context";
 // Protected Route
 function ProtectedRout(props) {
-  if (props.isLoading) return;
-  if (props.loggedUserData != null) {
+  // context from ApiContext \\
+  const { loggedUserData, isLoading } = useContext(ApiContext);
+
+  if (isLoading) return;
+  if (loggedUserData != null) {
     return <>{props.children}</>;
   } else {
     return <Navigate to="/login" />;
@@ -28,50 +28,17 @@ function ProtectedRout(props) {
 }
 
 function App() {
-  const [loggedUserData, setLoggedUserData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  // Get userData from Login component
-  function getLoggedInUserData() {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      // 👈 important
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const data = jwtDecode(token);
-      setLoggedUserData(data);
-    } catch (err) {
-      console.log("Invalid token:", err);
-      localStorage.removeItem("token");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  // Remove user data
-  function removeUserData() {
-    localStorage.removeItem("token");
-    setLoggedUserData(null);
-  }
-
-  useEffect(() => {
-    getLoggedInUserData(); // ✅ important line for render error
-  }, []);
-
   // createBrowserRouter => Client side
   // createHashRouter => Server side
   const router = createHashRouter([
     {
       path: "",
-      element: <Navbar userData={loggedUserData} logoutUser={removeUserData} />,
+      element: <Navbar />,
       children: [
         {
           index: true,
           element: (
-            <ProtectedRout loggedUserData={loggedUserData}>
+            <ProtectedRout>
               <Home />
             </ProtectedRout>
           ),
@@ -79,21 +46,15 @@ function App() {
         {
           path: "/home",
           element: (
-            <ProtectedRout
-              loggedUserData={loggedUserData}
-              isLoading={isLoading}
-            >
-              <Home userData={loggedUserData} />
+            <ProtectedRout>
+              <Home />
             </ProtectedRout>
           ),
         },
         {
           path: "/movies",
           element: (
-            <ProtectedRout
-              loggedUserData={loggedUserData}
-              isLoading={isLoading}
-            >
+            <ProtectedRout>
               <Movies />
             </ProtectedRout>
           ),
@@ -101,10 +62,7 @@ function App() {
         {
           path: "/tv",
           element: (
-            <ProtectedRout
-              loggedUserData={loggedUserData}
-              isLoading={isLoading}
-            >
+            <ProtectedRout>
               <TvShow />
             </ProtectedRout>
           ),
@@ -112,24 +70,21 @@ function App() {
         {
           path: "/details/:media/:id",
           element: (
-            <ProtectedRout
-              loggedUserData={loggedUserData}
-              isLoading={isLoading}
-            >
+            <ProtectedRout>
               <Details />
             </ProtectedRout>
           ),
         },
-        { path: "/login", element: <Login loginVer={getLoggedInUserData} /> }, // No call => getLoggedInUserData() --> because i just need the reference function
+        { path: "/login", element: <Login /> }, // No call => getLoggedInUserData() --> because i just need the reference function
         { path: "/signup", element: <Signup /> },
       ],
     },
     { path: "*", element: <Notfound /> },
   ]);
   return (
-    <GoogleOAuthProvider clientId="135828211132-a06rnbnc9h3elm8qehjr02pg8h9m20fh.apps.googleusercontent.com">
+    <>
       <RouterProvider router={router} />
-    </GoogleOAuthProvider>
+    </>
   );
 }
 

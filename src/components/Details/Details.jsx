@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -9,6 +10,7 @@ export default function Details() {
   const [similar, setSimilar] = useState([]);
   const [collections, setCollection] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [videoKey, setVideoKey] = useState(null);
 
   // details movie
   async function getDetails() {
@@ -36,10 +38,27 @@ export default function Details() {
     setCollection(data.parts);
   }
 
+  // Get Video trailer Movies \\
+  async function videoMovieTrailer() {
+    try {
+      const { data } = await axios.get(
+        `https://api.themoviedb.org/3/${media}/${id}/videos?api_key=ab6f02890a894dfd18b04c025b5de2eb`,
+      );
+      let trailer = data.results.find((video) => {
+        return video.type === "Trailer" && video.site === "YouTube";
+      });
+      if (trailer) setVideoKey(trailer.key);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
+    setVideoKey(null);
     getDetails();
     similarMovie();
-  }, [id]);
+    videoMovieTrailer();
+  }, [id, media]);
 
   useEffect(() => {
     if (details?.belongs_to_collection?.id) {
@@ -81,15 +100,7 @@ export default function Details() {
                   </button>
                 ))}
               </div>
-              <p
-                className={`${
-                  Number.isInteger(Math.round(details.vote_average * 10) / 10)
-                    ? "px-3.5"
-                    : ""
-                }`}
-              >
-                vote average : {Math.round(details.vote_average * 10) / 10}
-              </p>
+              <p>vote average : {Math.round(details.vote_average * 10) / 10}</p>
               <p>vote count : {details.vote_count}</p>
               <p>popularity : {details.popularity}</p>
               <p>release data : {details.release_date}</p>
@@ -129,8 +140,24 @@ export default function Details() {
           ) : (
             ""
           )}
+
+          {/* video trailer */}
+          <h2 className="text-4xl">Official Trailer :</h2>
+          {videoKey ? (
+            <iframe
+              src={`https://www.youtube.com/embed/${videoKey}`}
+              frameBorder="0"
+              className="w-full m-auto h-125 my-3"
+              allowFullScreen
+            ></iframe>
+          ) : (
+            <p className="text-gray-400 text-g mt-3 mb-4 px-3">
+              No trailer available
+            </p>
+          )}
+
           {/* seasons */}
-          {media === "tv" && details.seasons.length != 0 ? (
+          {media === "tv" && details.seasons?.length > 0 ? (
             <div>
               <h2 className="text-3xl">Series Seasons :</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 my-4">
@@ -153,7 +180,9 @@ export default function Details() {
                       <div className="mt-2 text-xl md:text-lg flex">
                         <h4>{season.name}</h4>
                       </div>
-                      <h4 className="absolute top-0 right-0 bg-lightBgColor px-2 py-0.5 rounded-bl-sm">episode: {season.episode_count}</h4>
+                      <h4 className="absolute top-0 right-0 bg-lightBgColor px-2 py-0.5 rounded-bl-sm">
+                        episode: {season.episode_count}
+                      </h4>
                     </div>
                   );
                 })}
@@ -165,12 +194,12 @@ export default function Details() {
           {/* Also Like */}
           <div className="mt-4">
             <h3 className="text-3xl">You May Also Like :</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 my-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {similar.length != 0
                 ? similar.map((allSimilar, index) => {
                     return (
                       <div key={index}>
-                        <Link to={`/details/movie/${allSimilar.id}`}>
+                        <Link to={`/details/${media}/${allSimilar.id}`}>
                           <img
                             src={
                               allSimilar.poster_path
@@ -178,7 +207,7 @@ export default function Details() {
                                   allSimilar.poster_path
                                 : "/No-Image.png"
                             }
-                            className="rounded-md sm:h-100"
+                            className="rounded-md sm:h-100 w-full"
                             onError={(e) => (e.target.src = "/No-Image.png")}
                             alt="poster movie"
                           />
@@ -199,6 +228,5 @@ export default function Details() {
     </>
   );
 }
-
 
 // OIokcsEfcxbHfvg7

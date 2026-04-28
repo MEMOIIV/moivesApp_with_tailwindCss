@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styleNav from "./navbar.module.css";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
@@ -8,21 +8,26 @@ import {
   SpotifyLogoIcon,
   InstagramLogoIcon,
 } from "../../utils/icons";
-export default function Navbar({ userData, logoutUser }) {
+import { ApiContext } from "../../context/context";
+export default function Navbar() {
   const [openNav, setOpenNav] = useState(false);
+
+  // context from ApiContext \\
+  const { loggedUserData, userLogout } = useContext(ApiContext);
+
   let navigate = useNavigate();
   function toggleNavList() {
     setOpenNav(!openNav);
   }
 
   function logout() {
-    logoutUser()
+    userLogout();
     navigate("/login");
   }
   return (
     <>
       <nav
-        className={`${styleNav.container_navbar} z-50 ${userData == null ? "py-2" : ""}`}
+        className={`${styleNav.container_navbar} z-50 ${loggedUserData == null ? "py-2" : ""}`}
       >
         <Link className="text-3xl mr-4 uppercase cursor-pointer hover:text-bgTransparent transition-all duration-300">
           Nexo
@@ -35,7 +40,7 @@ export default function Navbar({ userData, logoutUser }) {
           >
             {/* part one */}
             <div
-              className={`navbar_link flex flex-col xl:flex-row ${userData == null ? "hidden" : ""}`}
+              className={`navbar_link flex flex-col xl:flex-row ${loggedUserData == null ? "hidden" : ""}`}
             >
               <Link to={"/home"} className={`${styleNav.navList}`}>
                 home
@@ -61,18 +66,18 @@ export default function Navbar({ userData, logoutUser }) {
             <div className="flex flex-col xl:flex-row items-center xl:ml-auto">
               <input
                 type="text"
-                className={`${styleNav.styleInput} ${userData == null ? "hidden" : ""}`}
+                className={`${styleNav.styleInput} ${loggedUserData == null ? "hidden" : ""}`}
                 placeholder="search"
               />
               <div
-                className={`${styleNav.containerIcon} ${userData == null ? "hidden" : ""}`}
+                className={`${styleNav.containerIcon} ${loggedUserData == null ? "hidden" : ""}`}
               >
                 <XLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <FacebookLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <SpotifyLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <InstagramLogoIcon className={`${styleNav.iconNavStyle}`} />
               </div>
-              {userData != null ? (
+              {loggedUserData != null ? (
                 ""
               ) : (
                 <>
@@ -88,7 +93,7 @@ export default function Navbar({ userData, logoutUser }) {
                 </>
               )}
               <li
-                className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0 cursor-pointer ${userData == null ? "hidden" : ""}`}
+                className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0 cursor-pointer ${loggedUserData == null ? "hidden" : ""}`}
                 onClick={logout}
               >
                 logout

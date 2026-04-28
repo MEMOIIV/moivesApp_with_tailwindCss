@@ -1,10 +1,12 @@
 import Joi from "joi";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { EyeIcon, EyeClosedIcon } from "../../../utils/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-function Login({ loginVer }) {
+import { useContext } from "react";
+import { ApiContext } from "../../../context/context";
+function Login() {
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -16,6 +18,9 @@ function Login({ loginVer }) {
 
   const [eyeIcon, setEyeIcon] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  // context from ApiContext \\
+  const { logVerification } = useContext(ApiContext);
 
   function getUser(e) {
     // // deep copy
@@ -60,7 +65,7 @@ function Login({ loginVer }) {
       if (data.message == "success") {
         // i need user data from token
         localStorage.setItem("token", data.data.credentials.access_token);
-        loginVer();
+        logVerification();
         navigate("/home");
         // change value clickButton to enable button
         setClickButton(false);
@@ -89,7 +94,7 @@ function Login({ loginVer }) {
       // 3 : check data success and save the token in the localStorage
       if (data.message == "success") {
         localStorage.setItem("token", data.data.access_token);
-        loginVer();
+        logVerification();
         navigate("/home");
       }
     } catch (error) {
