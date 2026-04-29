@@ -1,16 +1,19 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { layerLoading } from "../../utils/card";
 import { Link } from "react-router-dom";
+import { ApiContext } from "../../context/context";
 
 function TvShow() {
   const [allTvShow, setAllTvShow] = useState([]);
   const [page, setPage] = useState(1);
+  const { apiKey } = useContext(ApiContext);
+
   async function getAllTvShow() {
     try {
       let { data } = await axios.get(
-        `https://api.themoviedb.org/3/discover/tv?api_key=ab6f02890a894dfd18b04c025b5de2eb&page=${page}`,
+        `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&page=${page}`,
       );
       let newTvShowList = data.results;
       setAllTvShow((currentTvShow) => {
@@ -20,6 +23,7 @@ function TvShow() {
       console.log(error);
     }
   }
+
   useEffect(() => {
     getAllTvShow();
     // eslint-disable-next-line react-hooks/exhaustive-deps

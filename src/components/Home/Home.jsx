@@ -7,8 +7,7 @@ function Home() {
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
   const [user, setUser] = useState(null);
-  let apiKey = "ab6f02890a894dfd18b04c025b5de2eb";
-  const { loggedUserData } = useContext(ApiContext);
+  const { loggedUserData , apiKey } = useContext(ApiContext);
 
   // Get all Trending Movies
   async function getTrendingMovies() {

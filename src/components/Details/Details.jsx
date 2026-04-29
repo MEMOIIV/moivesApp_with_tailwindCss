@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { loadingSpan } from "../../utils/card";
+import { ApiContext } from "../../context/context";
 export default function Details() {
   const { id, media } = useParams();
   const [details, setDetails] = useState(null);
@@ -11,12 +12,12 @@ export default function Details() {
   const [collections, setCollection] = useState([]);
   const [loading, setLoading] = useState(true);
   const [videoKey, setVideoKey] = useState(null);
-
+  const { apiKey } = useContext(ApiContext);
   // details movie
   async function getDetails() {
     setLoading(true);
     let { data } = await axios.get(
-      `https://api.themoviedb.org/3/${media}/${id}?api_key=ab6f02890a894dfd18b04c025b5de2eb`,
+      `https://api.themoviedb.org/3/${media}/${id}?api_key=${apiKey}`,
     );
     setDetails(data);
     setTimeout(() => {
@@ -26,14 +27,14 @@ export default function Details() {
   // similar movies
   async function similarMovie() {
     let { data } = await axios.get(
-      `https://api.themoviedb.org/3/${media}/${id}/similar?api_key=ab6f02890a894dfd18b04c025b5de2eb`,
+      `https://api.themoviedb.org/3/${media}/${id}/similar?api_key=${apiKey}`,
     );
     setSimilar(data.results.slice(0, 10));
   }
   // collection mof movies
   async function getCollection() {
     const { data } = await axios.get(
-      `https://api.themoviedb.org/3/collection/${details?.belongs_to_collection?.id}?api_key=ab6f02890a894dfd18b04c025b5de2eb`,
+      `https://api.themoviedb.org/3/collection/${details?.belongs_to_collection?.id}?api_key=${apiKey}`,
     );
     setCollection(data.parts);
   }
@@ -42,7 +43,7 @@ export default function Details() {
   async function videoMovieTrailer() {
     try {
       const { data } = await axios.get(
-        `https://api.themoviedb.org/3/${media}/${id}/videos?api_key=ab6f02890a894dfd18b04c025b5de2eb`,
+        `https://api.themoviedb.org/3/${media}/${id}/videos?api_key=${apiKey}`,
       );
       let trailer = data.results.find((video) => {
         return video.type === "Trailer" && video.site === "YouTube";
@@ -142,7 +143,7 @@ export default function Details() {
           )}
 
           {/* video trailer */}
-          <h2 className="text-4xl">Official Trailer :</h2>
+          <h2 className="text-4xl py-4">Official Trailer :</h2>
           {videoKey ? (
             <iframe
               src={`https://www.youtube.com/embed/${videoKey}`}
@@ -172,7 +173,7 @@ export default function Details() {
                                 season.poster_path
                               : "/No-Image.png"
                           }
-                          className="rounded-md"
+                          className="rounded-md h-100 w-full"
                           onError={(e) => (e.target.src = "/No-Image.png")}
                           alt="poster movie"
                         />
@@ -192,8 +193,8 @@ export default function Details() {
             ""
           )}
           {/* Also Like */}
-          <div className="mt-4">
-            <h3 className="text-3xl">You May Also Like :</h3>
+          <div>
+            <h3 className="text-3xl py-8">You May Also Like :</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {similar.length != 0
                 ? similar.map((allSimilar, index) => {

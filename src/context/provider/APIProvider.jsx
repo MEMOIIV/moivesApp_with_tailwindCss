@@ -4,6 +4,7 @@ import { ApiContext } from "../context";
 function API_context(props) {
   const [loggedUserData, setLoggedUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [valueSearchIn, setValueSearchIn] = useState(null);
 
   // Get userData from Login component
   function getLoggedInUserData() {
@@ -37,6 +38,11 @@ function API_context(props) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     getLoggedInUserData(); // ✅ important line for render error
   }, []);
+
+  function getValueInput(e) {
+    setValueSearchIn(e.target.value);
+  }
+
   return (
     <ApiContext.Provider
       value={{
@@ -44,6 +50,9 @@ function API_context(props) {
         isLoading,
         userLogout: removeUserData,
         logVerification: getLoggedInUserData,
+        apiKey: "ab6f02890a894dfd18b04c025b5de2eb",
+        searchInputValue: getValueInput,
+        valueSearchIn,
       }}
     >
       {props.children}

@@ -13,7 +13,8 @@ export default function Navbar() {
   const [openNav, setOpenNav] = useState(false);
 
   // context from ApiContext \\
-  const { loggedUserData, userLogout } = useContext(ApiContext);
+  const { loggedUserData, userLogout, searchInputValue } =
+    useContext(ApiContext);
 
   let navigate = useNavigate();
   function toggleNavList() {
@@ -23,6 +24,16 @@ export default function Navbar() {
   function logout() {
     userLogout();
     navigate("/login");
+  }
+
+  // search input
+  function handleChange(e) {
+    if (e.target.value == "") {
+      navigate("/home");
+    } else {
+      searchInputValue(e);
+      navigate("/search");
+    }
   }
   return (
     <>
@@ -68,6 +79,7 @@ export default function Navbar() {
                 type="text"
                 className={`${styleNav.styleInput} ${loggedUserData == null ? "hidden" : ""}`}
                 placeholder="search"
+                onChange={handleChange}
               />
               <div
                 className={`${styleNav.containerIcon} ${loggedUserData == null ? "hidden" : ""}`}

@@ -1,15 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { layerLoading } from "../../utils/card";
 import { Link, Outlet } from "react-router-dom";
+import { ApiContext } from "../../context/context";
 
 export default function Movies() {
   const [allMovies, setAllMovies] = useState([]);
   const [pages, setPages] = useState(1);
+  const { apiKey } = useContext(ApiContext);
+
   async function getAllMovies() {
     let { data } = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=ab6f02890a894dfd18b04c025b5de2eb&page=${pages}`,
+      `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&page=${pages}`,
     );
     const newMoviesList = data.results;
     setAllMovies((currentMovies) => [...currentMovies, ...newMoviesList]);
