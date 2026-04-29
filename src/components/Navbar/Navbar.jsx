@@ -62,13 +62,7 @@ export default function Navbar() {
               <Link to={"/tv"} className={`${styleNav.navList} `}>
                 tv show
               </Link>
-              <Link to={""} className={`${styleNav.navList} `}>
-                people
-              </Link>
-              <Link to={""} className={`${styleNav.navList} `}>
-                about
-              </Link>
-              <Link to={""} className={`${styleNav.navList} `}>
+              <Link to={"/networks"} className={`${styleNav.navList} `}>
                 networks
               </Link>
             </div>

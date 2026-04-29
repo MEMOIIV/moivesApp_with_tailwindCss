@@ -15,6 +15,7 @@ import Details from "./components/Details/Details";
 import { useContext } from "react";
 import { ApiContext } from "./context/context";
 import Search from "./components/Search/Search";
+import Networks from "./components/Networks/Networks";
 // Protected Route
 function ProtectedRout(props) {
   // context from ApiContext \\
@@ -65,6 +66,14 @@ function App() {
           element: (
             <ProtectedRout>
               <TvShow />
+            </ProtectedRout>
+          ),
+        },
+        {
+          path: "/networks",
+          element: (
+            <ProtectedRout>
+              <Networks />
             </ProtectedRout>
           ),
         },

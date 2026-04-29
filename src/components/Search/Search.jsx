@@ -11,7 +11,7 @@ export default function Search() {
   const [notFound, setNotFound] = useState(false);
 
   async function searchMulti() {
-    const badWords = ["sex", "fuck", "porn", "kiss"];
+    const badWords = ["sex", "fuck", "porn", "kiss", "xxx","xx","sexy"];
 
     const query = valueSearchIn?.toLowerCase().trim();
 
