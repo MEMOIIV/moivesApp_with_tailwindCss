@@ -7,7 +7,7 @@ function Home() {
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
   const [user, setUser] = useState(null);
-  const { loggedUserData , apiKey } = useContext(ApiContext);
+  const { loggedUserData, apiKey, isGuest } = useContext(ApiContext);
 
   // Get all Trending Movies
   async function getTrendingMovies() {
@@ -53,10 +53,17 @@ function Home() {
           <h2>Hello {user.data.profile.firstName}</h2>
         </div>
       )}
+      {!isGuest ? (
+        ""
+      ) : (
+        <div className="mt-defaultPadding w-[90%] mx-auto text-3xl">
+          <h2>Hello Guest </h2>
+        </div>
+      )}
 
       {/* Movies show */}
       <div
-        className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 w-[90%] m-auto px-4 gap-4 ${user == null ? "mt-defaultPadding" : "mt-10"}`}
+        className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 w-[90%] m-auto px-4 gap-4 ${user == null && !isGuest ? "mt-defaultPadding" : "mt-10"}`}
       >
         <div
           className="relative row-span-1 col-span-1 md:col-span-1 xl:col-span-2
@@ -81,8 +88,11 @@ function Home() {
                     onMouseMove={() => {}}
                   >
                     <img
-                      src={movie.poster_path != null ?
-                        "https://image.tmdb.org/t/p/w500" + movie.poster_path : "/No-Image.png"
+                      src={
+                        movie.poster_path != null
+                          ? "https://image.tmdb.org/t/p/w500" +
+                            movie.poster_path
+                          : "/No-Image.png"
                       }
                       className="w-full"
                       onError={(e) => (e.target.src = "/No-Image.png")}

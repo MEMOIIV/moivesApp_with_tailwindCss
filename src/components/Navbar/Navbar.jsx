@@ -13,7 +13,7 @@ export default function Navbar() {
   const [openNav, setOpenNav] = useState(false);
 
   // context from ApiContext \\
-  const { loggedUserData, userLogout, searchInputValue } =
+  const { loggedUserData, userLogout, searchInputValue, isGuest ,logVerification } =
     useContext(ApiContext);
 
   let navigate = useNavigate();
@@ -35,10 +35,17 @@ export default function Navbar() {
       navigate("/search");
     }
   }
+
+  // gest button
+  function gest() {
+    localStorage.setItem("guest", "true");
+    logVerification()
+    navigate("/home");
+  }
   return (
     <>
       <nav
-        className={`${styleNav.container_navbar} z-50 ${loggedUserData == null ? "py-2" : ""}`}
+        className={`${styleNav.container_navbar} z-50 ${!loggedUserData && !isGuest ? "py-2" : ""}`}
       >
         <Link className="text-3xl mr-4 uppercase cursor-pointer hover:text-bgTransparent transition-all duration-300">
           Nexo
@@ -51,7 +58,7 @@ export default function Navbar() {
           >
             {/* part one */}
             <div
-              className={`navbar_link flex flex-col xl:flex-row ${loggedUserData == null ? "hidden" : ""}`}
+              className={`navbar_link flex flex-col xl:flex-row ${!loggedUserData && !isGuest ? "hidden" : ""}`}
             >
               <Link to={"/home"} className={`${styleNav.navList}`}>
                 home
@@ -71,19 +78,19 @@ export default function Navbar() {
             <div className="flex flex-col xl:flex-row items-center xl:ml-auto">
               <input
                 type="text"
-                className={`${styleNav.styleInput} ${loggedUserData == null ? "hidden" : ""}`}
+                className={`${styleNav.styleInput} ${!loggedUserData && !isGuest ? "hidden" : ""}`}
                 placeholder="search"
                 onChange={handleChange}
               />
               <div
-                className={`${styleNav.containerIcon} ${loggedUserData == null ? "hidden" : ""}`}
+                className={`${styleNav.containerIcon} ${!loggedUserData && !isGuest ? "hidden" : ""}`}
               >
                 <XLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <FacebookLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <SpotifyLogoIcon className={`${styleNav.iconNavStyle}`} />
                 <InstagramLogoIcon className={`${styleNav.iconNavStyle}`} />
               </div>
-              {loggedUserData != null ? (
+              {loggedUserData != null || isGuest != false ? (
                 ""
               ) : (
                 <>
@@ -92,14 +99,20 @@ export default function Navbar() {
                   </Link>
                   <Link
                     to={"/signup"}
-                    className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0`}
+                    className={`${styleNav.navList} border-b border-borderColor xl:mr-4 xl:mb-0`}
                   >
                     signUp
                   </Link>
+                  <li
+                    className={`${styleNav.navList} border-none pb-2 xl:pb-0 xl:mr-4 xl:mb-0 cursor-pointer`}
+                    onClick={gest}
+                  >
+                    guest
+                  </li>
                 </>
               )}
               <li
-                className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0 cursor-pointer ${loggedUserData == null ? "hidden" : ""}`}
+                className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0 cursor-pointer ${!loggedUserData && !isGuest ? "hidden" : ""}`}
                 onClick={logout}
               >
                 logout

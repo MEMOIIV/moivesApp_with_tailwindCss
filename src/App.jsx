@@ -19,10 +19,11 @@ import Networks from "./components/Networks/Networks";
 // Protected Route
 function ProtectedRout(props) {
   // context from ApiContext \\
-  const { loggedUserData, isLoading } = useContext(ApiContext);
+  const { loggedUserData, isLoading, isGuest } =
+    useContext(ApiContext);
 
   if (isLoading) return;
-  if (loggedUserData != null) {
+  if (loggedUserData != null || isGuest) {
     return <>{props.children}</>;
   } else {
     return <Navigate to="/login" />;
