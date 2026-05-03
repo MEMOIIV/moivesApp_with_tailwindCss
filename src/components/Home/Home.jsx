@@ -1,13 +1,18 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { layerLoading } from "../../utils/card";
 import { Link } from "react-router-dom";
-import { ApiContext } from "../../context/context";
+import { ApiContext, APIUser, ShardLinks } from "../../context/context";
+import { HeartIcon } from "../../utils/icons";
+import TvShow from "../TvShow/TvShow";
 function Home() {
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
-  const [user, setUser] = useState(null);
-  const { loggedUserData, apiKey, isGuest } = useContext(ApiContext);
+  // const [user, setUser] = useState(null);
+  const { apiKey, isGuest } = useContext(ApiContext);
+  const { getUserData, user } = useContext(APIUser);
+  const { linksMedia } = useContext(ShardLinks);
 
   // Get all Trending Movies
   async function getTrendingMovies() {
@@ -26,18 +31,8 @@ function Home() {
     setTvShows(data.results);
   }
 
-  async function getUserData() {
-    let { data } = await axios.get(
-      `http://localhost:3000/user/${loggedUserData._id}/sheared-profile`,
-    );
-    if (data.message == "success") {
-      setUser(data);
-    }
-  }
-
   useEffect(() => {
     // component Did Mount \\
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     getTrendingMovies();
     getTrendingTvShow();
     getUserData();
@@ -83,34 +78,7 @@ function Home() {
           ? movies.map((movie, index) => {
               return (
                 <div key={index} className="relative">
-                  <Link
-                    to={`/details/movie/${movie.id}`}
-                    onMouseMove={() => {}}
-                  >
-                    <img
-                      src={
-                        movie.poster_path != null
-                          ? "https://image.tmdb.org/t/p/w500" +
-                            movie.poster_path
-                          : "/No-Image.png"
-                      }
-                      className="w-full"
-                      onError={(e) => (e.target.src = "/No-Image.png")}
-                      alt="image"
-                    />
-                  </Link>
-                  <h6 className="pt-1 text-md md:text-sm">
-                    {movie.original_title}
-                  </h6>
-                  <p
-                    className={`absolute top-0 right-0 p-2 bg-bgTransparent ${
-                      Number.isInteger(Math.round(movie.vote_average * 10) / 10)
-                        ? "px-3.5"
-                        : ""
-                    }`}
-                  >
-                    {Math.round(movie.vote_average * 10) / 10}
-                  </p>
+                  {linksMedia(movie)}
                 </div>
               );
             })
@@ -136,24 +104,7 @@ function Home() {
         {tvShows.length != 0
           ? tvShows.map((tvShow, index) => (
               <div key={index} className="relative">
-                <Link to={`/details/tv/${tvShow.id}`}>
-                  {" "}
-                  <img
-                    src={"https://image.tmdb.org/t/p/w500" + tvShow.poster_path}
-                    className="w-full"
-                    alt="image"
-                  />
-                </Link>
-                <h6 className="pt-1">{tvShow.name}</h6>
-                <p
-                  className={`absolute top-0 right-0 p-2 bg-bgTransparent ${
-                    Number.isInteger(Math.round(tvShow.vote_average * 10) / 10)
-                      ? "px-3.5"
-                      : ""
-                  }`}
-                >
-                  {Math.round(tvShow.vote_average * 10) / 10}
-                </p>
+                {linksMedia(tvShow)}
               </div>
             ))
           : layerLoading(10)}

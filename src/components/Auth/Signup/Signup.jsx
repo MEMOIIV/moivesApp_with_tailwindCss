@@ -11,6 +11,8 @@ function Signup() {
     password: "",
     confirmPassword: "",
   });
+  
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
   const [joiError, setJoiError] = useState([]);
@@ -76,10 +78,7 @@ function Signup() {
   // Api User
   async function sendUserData() {
     try {
-      let { data } = await axios.post(
-        "http://localhost:3000/auth/signup",
-        user,
-      );
+      let { data } = await axios.post(`${API_URL}/auth/signup`, user);
       setClickedButton(false);
       if (data.message == "success") {
         navigate("/home");

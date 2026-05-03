@@ -72,6 +72,9 @@ export default function Navbar() {
               <Link to={"/networks"} className={`${styleNav.navList} `}>
                 networks
               </Link>
+              <Link to={"/favorite"} className={`${styleNav.navList} `}>
+                favorite
+              </Link>
             </div>
 
             {/* part two */}

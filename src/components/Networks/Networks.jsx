@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { ApiContext } from "../../context/context";
+import { ApiContext, ShardLinks } from "../../context/context";
 import { layerLoading } from "./../../utils/card";
 import { Link } from "react-router-dom";
 
@@ -10,6 +10,7 @@ export default function Networks() {
   let { apiKey } = useContext(ApiContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { linksMedia } = useContext(ShardLinks);
   const networks = [
     { id: 49, name: "HBO" },
     { id: 213, name: "Netflix" },
@@ -80,19 +81,7 @@ export default function Networks() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {loading
                 ? layerLoading(20)
-                : net.shows.map((show) => (
-                    <Link to={`/details/tv/${show.id}`} key={show.id}>
-                      <img
-                        src={
-                          show.poster_path
-                            ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
-                            : "/No-Image.png"
-                        }
-                        className="rounded"
-                      />
-                      <h3>{show.name}</h3>
-                    </Link>
-                  ))}
+                : net.shows.map((show) => <div className="relative">{linksMedia(show)}</div>)}
             </div>
           </div>
         ))}

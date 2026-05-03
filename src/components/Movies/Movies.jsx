@@ -3,12 +3,13 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { layerLoading } from "../../utils/card";
 import { Link, Outlet } from "react-router-dom";
-import { ApiContext } from "../../context/context";
+import { ApiContext, ShardLinks } from "../../context/context";
 
 export default function Movies() {
   const [allMovies, setAllMovies] = useState([]);
   const [pages, setPages] = useState(1);
   const { apiKey } = useContext(ApiContext);
+  const { linksMedia } = useContext(ShardLinks);
 
   async function getAllMovies() {
     let { data } = await axios.get(
@@ -44,28 +45,7 @@ export default function Movies() {
         {allMovies.length != 0
           ? allMovies.map((movies, index) => (
               <div key={index} className="relative">
-                <Link to={`/details/movie/${movies.id}`}>
-                  <img
-                    src={
-                      movies.poster_path != null
-                        ? "https://image.tmdb.org/t/p/w500" + movies.poster_path
-                        : "/No-Image.png"
-                    }
-                    className="w-full"
-                    onError={(e) => (e.target.src = "/No-Image.png")}
-                    alt="image"
-                  />
-                </Link>
-                <h6 className="pt-1">{movies.title}</h6>
-                <p
-                  className={`absolute top-0 right-0 p-2 bg-bgTransparent ${
-                    Number.isInteger(Math.round(movies.vote_average * 10) / 10)
-                      ? "px-3.5"
-                      : ""
-                  }`}
-                >
-                  {Math.round(movies.vote_average * 10) / 10}
-                </p>
+                {linksMedia(movies)}
               </div>
             ))
           : layerLoading(20)}

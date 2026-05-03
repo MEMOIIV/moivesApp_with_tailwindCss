@@ -3,12 +3,13 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { layerLoading } from "../../utils/card";
 import { Link } from "react-router-dom";
-import { ApiContext } from "../../context/context";
+import { ApiContext, ShardLinks } from "../../context/context";
 
 function TvShow() {
   const [allTvShow, setAllTvShow] = useState([]);
   const [page, setPage] = useState(1);
   const { apiKey } = useContext(ApiContext);
+  const { linksMedia } = useContext(ShardLinks);
 
   async function getAllTvShow() {
     try {
@@ -50,32 +51,7 @@ function TvShow() {
       {allTvShow.length == 0
         ? layerLoading(20)
         : allTvShow.map((tvShow, index) => {
-            return (
-              <div key={index}>
-                <Link to={`/details/tv/${tvShow.id}`}>
-                  <img
-                    src={
-                      tvShow.poster_path != null
-                        ? "https://image.tmdb.org/t/p/w500" + tvShow.poster_path
-                        : "/No-Image.png"
-                    }
-                    className="w-full"
-                    onError={(e) => (e.target.src = "/No-Image.png")}
-                    alt="image"
-                  />
-                </Link>
-                <h6 className="pt-1">{tvShow.name}</h6>
-                <p
-                  className={`absolute top-0 right-0 p-2 bg-bgTransparent ${
-                    Number.isInteger(Math.round(tvShow.vote_average * 10) / 10)
-                      ? "px-3.5"
-                      : ""
-                  }`}
-                >
-                  {Math.round(tvShow.vote_average * 10) / 10}
-                </p>
-              </div>
-            );
+            return <div key={index} className="relative">{linksMedia(tvShow)}</div>;
           })}
     </section>
   );

@@ -4,7 +4,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { loadingSpan } from "../../utils/card";
-import { ApiContext } from "../../context/context";
+import { ApiContext, ShardLinks } from "../../context/context";
 export default function Details() {
   const { id, media } = useParams();
   const [details, setDetails] = useState(null);
@@ -13,6 +13,8 @@ export default function Details() {
   const [loading, setLoading] = useState(true);
   const [videoKey, setVideoKey] = useState(null);
   const { apiKey } = useContext(ApiContext);
+  const { linksMedia } = useContext(ShardLinks);
+
   // details movie
   async function getDetails() {
     setLoading(true);
@@ -160,7 +162,7 @@ export default function Details() {
           {/* seasons */}
           {media === "tv" && details.seasons?.length > 0 ? (
             <div>
-              <h2 className="text-3xl">Series Seasons :</h2>
+              <h2 className="text-3xl pt-10 pb-5">Series Seasons :</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 my-4">
                 {details.seasons.map((season, index) => {
                   return (
@@ -198,28 +200,7 @@ export default function Details() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {similar.length != 0
                 ? similar.map((allSimilar, index) => {
-                    return (
-                      <div key={index}>
-                        <Link to={`/details/${media}/${allSimilar.id}`}>
-                          <img
-                            src={
-                              allSimilar.poster_path
-                                ? "https://image.tmdb.org/t/p/w500" +
-                                  allSimilar.poster_path
-                                : "/No-Image.png"
-                            }
-                            className="rounded-md sm:h-100 w-full"
-                            onError={(e) => (e.target.src = "/No-Image.png")}
-                            alt="poster movie"
-                          />
-                        </Link>
-                        <h4 className="mt-2 text-xl md:text-lg">
-                          {media == "movie"
-                            ? allSimilar.title
-                            : allSimilar.name}
-                        </h4>
-                      </div>
-                    );
+                    return <div key={index}>{linksMedia(allSimilar)}</div>;
                   })
                 : ""}
             </div>

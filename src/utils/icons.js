@@ -7,4 +7,6 @@ export {
   InstagramLogoIcon,
   EyeIcon,
   EyeClosedIcon,
+  HeartIcon,
+  HeartBreakIcon,
 } from "@phosphor-icons/react";

@@ -19,6 +19,7 @@ function Login() {
   const [eyeIcon, setEyeIcon] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL;
   // context from ApiContext \\
   const { logVerification } = useContext(ApiContext);
 
@@ -61,7 +62,7 @@ function Login() {
   // System Login
   async function getUserData() {
     try {
-      let { data } = await axios.post("http://localhost:3000/auth/login", user);
+      let { data } = await axios.post(`${API_URL}/auth/login`, user);
       if (data.message == "success") {
         // i need user data from token
         localStorage.setItem("token", data.data.credentials.access_token);
@@ -87,10 +88,9 @@ function Login() {
     const googleToken = credentialResponse.credential;
     try {
       // 2 : send the token you get from google to backend API
-      const { data } = await axios.post(
-        "http://localhost:3000/auth/login/gmail",
-        { idToken: googleToken },
-      );
+      const { data } = await axios.post(`${API_URL}/auth/login/gmail`, {
+        idToken: googleToken,
+      });
       // 3 : check data success and save the token in the localStorage
       if (data.message == "success") {
         localStorage.setItem("token", data.data.access_token);
