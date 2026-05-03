@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import styleNav from "./navbar.module.css";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   ListIcon,
@@ -128,17 +127,20 @@ export default function Navbar() {
                 ""
               ) : (
                 <>
-                  <Link to={"/login"} className={`${styleNav.navList}`}>
+                  <Link
+                    to={"/login"}
+                    className={`w-full text-gray-300 text-[16px] border-b border-borderColor mt-2 mx-0 xl:mx-2 xl:mt-0 text-center py-1 hover:opacity-95 xl:border-none xl:w-fit xl:py-0 xl:hover:opacity-100 hover:text-bgTransparent transition-all duration-300`}
+                  >
                     login
                   </Link>
                   <Link
                     to={"/signup"}
-                    className={`${styleNav.navList} border-b border-borderColor xl:mr-4 xl:mb-0`}
+                    className={`w-full text-gray-300 text-[16px] border-b border-borderColor mt-2 mx-0 xl:mx-2 xl:mt-0 text-center py-1 hover:opacity-95 xl:border-none xl:w-fit xl:py-0 xl:hover:opacity-100 hover:text-bgTransparent transition-all duration-300 xl:mr-4 xl:mb-0`}
                   >
                     signUp
                   </Link>
                   <li
-                    className={`${styleNav.navList} border-none pb-2 xl:pb-0 xl:mr-4 xl:mb-0 cursor-pointer`}
+                    className={`w-full text-gray-300 text-[16px] border-b border-borderColor mt-2 mx-0 xl:mx-2 xl:mt-0 text-center py-1 hover:opacity-95 xl:border-none xl:w-fit xl:py-0 xl:hover:opacity-100 hover:text-bgTransparent transition-all duration-300 border-none pb-2 xl:pb-0 xl:mr-4 xl:mb-0 cursor-pointer`}
                     onClick={gest}
                   >
                     guest
@@ -146,7 +148,7 @@ export default function Navbar() {
                 </>
               )}
               <li
-                className={`${styleNav.navList} border-none mb-2 xl:mr-4 xl:mb-0 cursor-pointer ${!loggedUserData && !isGuest ? "hidden" : ""}`}
+                className={`w-full text-gray-300 text-[16px] border-b border-borderColor mt-2 mx-0 xl:mx-2 xl:mt-0 text-center py-1 hover:opacity-95 xl:border-none xl:w-fit xl:py-0 xl:hover:opacity-100 hover:text-bgTransparent transition-all duration-300 border-none mb-2 xl:mr-4 xl:mb-0 cursor-pointer ${!loggedUserData && !isGuest ? "hidden" : ""}`}
                 onClick={logout}
               >
                 logout
