@@ -11,17 +11,17 @@ export default function Search() {
   const [notFound, setNotFound] = useState(false);
 
   async function searchMulti() {
-    const badWords = ["sex", "fuck", "porn", "kiss", "xxx","xx","sexy"];
+    // const badWords = ["sex", "fuck", "porn", "kiss", "xxx","xx","sexy"];
 
     const query = valueSearchIn?.toLowerCase().trim();
 
     if (!query) return;
 
-    if (badWords.includes(query)) {
-      setMultiData([]); // نظف النتائج
-      setNotFound(true); // اعرض رسالة
-      return; // مهم جدًا يمنع API
-    }
+    // if (badWords.includes(query)) {
+    //   setMultiData([]); // نظف النتائج
+    //   setNotFound(true); // اعرض رسالة
+    //   return; // مهم جدًا يمنع API
+    // }
 
     try {
       const { data } = await axios.get(
